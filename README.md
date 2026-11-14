@@ -4,6 +4,8 @@ A community that saves together should be able to lend to its own members, with 
 
 Surety is a small NEAR contract that sits next to an existing **Sputnik DAO v2**. Custody and approvals stay in the DAO (visible in Trezu). Surety adds the loan logic: savings, guarantor pledges, filing the payout as a normal Sputnik `Transfer` proposal, routing repayments back to the treasury, and moving guarantors' locked savings to the treasury when a loan defaults. Each member's borrowing limit is derived from their real repayment record.
 
+**Live board:** <https://surety.ahmardchain.workers.dev/> (reads the testnet contract and DAO live).
+
 Track: **Social Money** (shared budgets, reputation-based access on top of Sputnik DAO and Trezu, named accounts). Network: **NEAR testnet**.
 
 ## Problem
@@ -39,13 +41,14 @@ DAO policy: `Everyone` may add proposals, the council group votes, the threshold
 ## Try it: do X → see Y
 
 ### 1. See the live board
+Open <https://surety.ahmardchain.workers.dev/>, or run it locally:
 ```bash
 git clone https://github.com/ahmardchain/surety && cd surety
 ```
 ```bash
 python3 -m http.server 8765
 ```
-Open <http://127.0.0.1:8765/web/>. **See:**
+Open <http://127.0.0.1:8765/web/> (dev version, loads Tailwind/Lucide from CDN; `node scripts/build-worker.js` builds the compiled `web/dist/` version that is deployed). **See:**
 - **Treasury:** 8 NEAR in the DAO; 2 NEAR paid out through Sputnik; 2 NEAR returned to the DAO.
 - **Loan #0 (ada): Repaid.** 1 NEAR came back from the borrower.
 - **Loan #1 (dayo): Defaulted.** 0.2 NEAR was repaid by dayo and 0.8 NEAR claimed from the guarantors.
@@ -167,7 +170,7 @@ The contract emits NEP-297-style `EVENT_JSON` logs (`deposit`, `loan_requested`,
 
 ## Built with
 
-near-sdk-rs 5.24, near-api-js 5.1, Sputnik DAO v2 (`sputnik-v2.testnet` factory, unmodified), Trezu (unmodified, for viewing). All code was written during the hackathon window with Claude Code.
+near-sdk-rs 5.24, near-api-js 5.1, Tailwind CSS 3.4 and Lucide icons (compiled into the page at build time), Geist font, Sputnik DAO v2 (`sputnik-v2.testnet` factory, unmodified), Trezu (unmodified, for viewing). All code was written during the hackathon window with Claude Code.
 
 ## Other NEAR Hackathon entry by the same author (rule Q-015)
 

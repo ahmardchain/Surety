@@ -2,7 +2,8 @@
 const fs = require("fs");
 const path = require("path");
 const root = path.join(__dirname, "..");
-const html = fs.readFileSync(path.join(root, "web", "index.html"), "utf8");
+require("./build-web.js");
+const html = fs.readFileSync(path.join(root, "web", "dist", "index.html"), "utf8");
 const txs = fs.readFileSync(path.join(root, "demo", "txs.json"), "utf8");
 const out = `const HTML = ${JSON.stringify(html)};
 const TXS = ${JSON.stringify(txs)};
