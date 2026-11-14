@@ -33,6 +33,26 @@ A community that saves together can lend to its own members. Two members lock pa
 
 Built for **[NEAR HACKATHON: Build Beyond Boundaries](https://nearhackathon.com)**, track **Social Money** ("build shared budgets, programmable rewards, collective ownership and reputation-based access on top of Sputnik DAO and Trezu").
 
+## ❗ Problem
+
+There are **2,195 DAOs** on the mainnet Sputnik factory `sputnik-dao.near` (`get_number_daos` at block 224,493,000). In every one of them, paying a member is a one-way `Transfer` proposal:
+
+- Nothing on-chain links that payout to a repayment.
+- No other member can stand behind the borrower.
+- If the money doesn't come back, the group's only tools are chasing the person and holding another vote.
+
+So a group that already pools money in a DAO still can't safely lend it to its own members, and the members who most need a loan are the ones without spare collateral to post.
+
+## 💡 Solution
+
+Surety is the missing loan layer, built **on** the group's Sputnik DAO instead of beside it:
+
+- ✅ **Custody stays in the DAO.** Every payout is a normal Sputnik `Transfer` proposal that the council approves once, in Sputnik or Trezu. Surety never holds treasury funds.
+- ✅ **Members guarantee each other.** Two **named-account** members lock part of their savings behind each loan, covering 100% of it.
+- ✅ **Repayments go straight back** to the treasury and unlock the guarantors.
+- ✅ **Defaults resolve in one call.** After the due date, **anyone** calls `claim()` and the guarantors' locked savings make the treasury whole in one transaction. No chasing, no bad-debt vote.
+- ✅ **Access is earned.** Borrowing limits rise only with real repayments and drop to zero after a default.
+
 ## ⚡ Verify in 60 seconds (no install)
 
 Two read-only calls to NEAR testnet RPC; needs only `curl` and `python3`.
@@ -58,18 +78,6 @@ guarantor-2-mwfpr6a5.testnet limit 1.5 repaid 0 defaults 0 locked 0
 ```
 That is the whole story in state: loan 0 repaid (borrower limit 1 → 1.5 NEAR, guarantors +0.5), loan 1 defaulted and made whole from guarantors (0.2 repaid + 0.8 claimed = 1 NEAR back), loan 2's proposal removed by the council (pledges released, nothing locked), defaulter's limit 0. Every step has a transaction link in [Live proof](#-live-proof-on-testnet).
 
-## Why it exists
-
-There are **2,195 DAOs** on the mainnet Sputnik factory `sputnik-dao.near` (`get_number_daos` at block 224,493,000). In every one of them, paying a member is a one-way `Transfer` proposal. Nothing on-chain links that payout to a repayment, no other member can stand behind it, and if the money doesn't come back the group's only tools are chasing the person and holding another vote.
-
-So a group that already pools money in a DAO still can't safely lend it to its own members. Surety is the missing loan layer, built **on** the DAO instead of beside it:
-
-- ✅ The loan pool never leaves the DAO treasury: every payout is a normal Sputnik proposal the council approves once.
-- ✅ Two **named-account** members lock part of their savings behind each loan, covering 100% of it.
-- ✅ Repayments go straight back to the treasury.
-- ✅ On default, **anyone** calls `claim()` and the guarantors' locked savings make the treasury whole in one transaction. No chasing, no bad-debt vote.
-- ✅ Borrowing limits are earned only by real repayments (reputation-based access), and drop to zero after a default.
-
 ## 🎬 Demo
 
 <a href="https://x.com/Ahmardchain/status/2121431624369705119"><img src="docs/demo-thumbnail.jpg" alt="Watch the Surety demo (1:13)" width="720" /></a>
@@ -88,7 +96,7 @@ So a group that already pools money in a DAO still can't safely lend it to its o
 
 ## Contents
 
-[Core features](#-core-features) · [How Sputnik DAO, Trezu and named accounts are used](#-how-sputnik-dao-trezu-and-named-accounts-are-used) · [Architecture](#-architecture) · [Live proof](#-live-proof-on-testnet) · [Key design decision](#-key-design-decision-lend-through-the-daos-own-proposal) · [Screenshots](#-screenshots) · [Real vs. mock](#-whats-real-vs-mock) · [Hackathon criteria](#-hackathon-criteria) · [Tech stack](#-tech-stack) · [Getting started](#-getting-started) · [Contract API](#-contract-api) · [Project structure](#-project-structure) · [Roadmap](#-roadmap)
+[Problem](#-problem) · [Solution](#-solution) · [Core features](#-core-features) · [How Sputnik DAO, Trezu and named accounts are used](#-how-sputnik-dao-trezu-and-named-accounts-are-used) · [Architecture](#-architecture) · [Live proof](#-live-proof-on-testnet) · [Key design decision](#-key-design-decision-lend-through-the-daos-own-proposal) · [Screenshots](#-screenshots) · [Real vs. mock](#-whats-real-vs-mock) · [Hackathon criteria](#-hackathon-criteria) · [Tech stack](#-tech-stack) · [Getting started](#-getting-started) · [Contract API](#-contract-api) · [Project structure](#-project-structure) · [Roadmap](#-roadmap)
 
 ## 🧩 Core features
 
