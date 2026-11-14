@@ -1,0 +1,20 @@
+{
+  "suffix": "mwfopr1t",
+  "accounts": {
+    "surety": "surety-coop-mwfopr1t.testnet",
+    "council": "council-coop-mwfopr1t.testnet",
+    "ada": "ada-coop-mwfopr1t.testnet",
+    "bola": "bola-coop-mwfopr1t.testnet",
+    "chidi": "chidi-coop-mwfopr1t.testnet",
+    "dayo": "dayo-coop-mwfopr1t.testnet"
+  },
+  "dao": "coop-mwfopr1t.sputnik-v2.testnet",
+  "deployed": true,
+  "funded": true,
+  "demo": {
+    "deposits": true,
+    "loanA": 0,
+    "loanB": 1,
+    "claimed": true
+  }
+}
