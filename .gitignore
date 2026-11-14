@@ -1,0 +1,6 @@
+target/
+node_modules/
+.env
+*.key.json
+scripts/.keys/
+/neardev
