@@ -1,0 +1,223 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Surety board</title>
+<meta name="description" content="Live board of a Sputnik DAO's member-guaranteed loans: savings, pledges, repayments, defaults and each member's record, read from NEAR testnet.">
+<style>
+:root{
+  --bg:#f6f5f1; --panel:#ffffff; --ink:#1b1d1f; --muted:#64686d; --line:#e3e1da;
+  --accent:#1f6f5c; --accent-soft:#e1efe9; --warn:#a1541a; --warn-soft:#f7e8dc;
+  --bad:#a3302a; --bad-soft:#f6e0de; --info:#2b5aa6; --info-soft:#e2eaf7;
+  --mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+}
+@media (prefers-color-scheme: dark){ :root:not([data-theme="light"]){
+  --bg:#141617; --panel:#1c1f21; --ink:#e8e6e1; --muted:#9a9ea3; --line:#2d3134;
+  --accent:#5fc2a6; --accent-soft:#1d3530; --warn:#e3a16c; --warn-soft:#3a2a1d;
+  --bad:#ec8a83; --bad-soft:#3b2120; --info:#8db0ec; --info-soft:#1f2a3d; } }
+:root[data-theme="dark"]{
+  --bg:#141617; --panel:#1c1f21; --ink:#e8e6e1; --muted:#9a9ea3; --line:#2d3134;
+  --accent:#5fc2a6; --accent-soft:#1d3530; --warn:#e3a16c; --warn-soft:#3a2a1d;
+  --bad:#ec8a83; --bad-soft:#3b2120; --info:#8db0ec; --info-soft:#1f2a3d; }
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.5 system-ui,-apple-system,"Segoe UI",sans-serif}
+main{max-width:1080px;margin:0 auto;padding:24px 16px 64px}
+h1{font-size:26px;margin:0 0 4px;letter-spacing:-.01em}
+h2{font-size:17px;margin:36px 0 12px}
+p{margin:0 0 8px}
+a{color:var(--info)}
+.muted{color:var(--muted)}
+.mono{font-family:var(--mono);font-size:13px;word-break:break-all}
+.grid{display:grid;gap:12px;grid-template-columns:repeat(auto-fit,minmax(200px,1fr))}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:14px 16px}
+.stat .k{font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.04em}
+.stat .v{font-size:20px;font-weight:600;margin-top:2px}
+.tablewrap{overflow-x:auto;background:var(--panel);border:1px solid var(--line);border-radius:10px}
+table{border-collapse:collapse;width:100%;min-width:720px}
+th,td{padding:9px 12px;text-align:left;border-bottom:1px solid var(--line);font-variant-numeric:tabular-nums}
+th{font-size:12px;color:var(--muted);font-weight:600;text-transform:uppercase;letter-spacing:.04em}
+tr:last-child td{border-bottom:0}
+td.num,th.num{text-align:right}
+.badge{display:inline-block;padding:2px 8px;border-radius:99px;font-size:12px;font-weight:600}
+.s-Open,.s-Filing,.s-Filed{background:var(--info-soft);color:var(--info)}
+.s-Active{background:var(--warn-soft);color:var(--warn)}
+.s-Repaid{background:var(--accent-soft);color:var(--accent)}
+.s-Defaulted{background:var(--bad-soft);color:var(--bad)}
+.s-Cancelled{background:var(--line);color:var(--muted)}
+.loans{display:grid;gap:12px;grid-template-columns:repeat(auto-fit,minmax(300px,1fr))}
+.loan h3{margin:0 0 6px;font-size:16px;display:flex;justify-content:space-between;gap:8px;align-items:center}
+.loan dl{display:grid;grid-template-columns:auto 1fr;gap:4px 12px;margin:8px 0 0;font-size:14px}
+.loan dt{color:var(--muted)}
+.loan dd{margin:0;text-align:right;font-variant-numeric:tabular-nums}
+.bar{height:6px;border-radius:3px;background:var(--line);overflow:hidden;margin-top:8px}
+.bar>i{display:block;height:100%;background:var(--accent)}
+ol.walk{padding-left:20px;margin:0}
+ol.walk li{margin-bottom:14px}
+pre{background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:10px 12px;overflow-x:auto;font:12.5px/1.45 var(--mono);margin:6px 0}
+.see{border-left:3px solid var(--accent);padding-left:10px;color:var(--muted)}
+.txs li{margin-bottom:6px}
+.err{color:var(--bad)}
+header .row{display:flex;flex-wrap:wrap;gap:8px 20px;margin-top:10px;font-size:14px}
+</style>
+</head>
+<body>
+<main>
+<header>
+  <h1>Surety</h1>
+  <p class="muted">A community that saves together lends to its own members. Members, not collateral, stand behind each loan. Custody and approvals stay in the Sputnik DAO.</p>
+  <div class="row">
+    <span>Network: <b id="net">testnet</b></span>
+    <span>DAO: <a id="dao-link" class="mono" target="_blank" rel="noopener"></a></span>
+    <span>Contract: <a id="contract-link" class="mono" target="_blank" rel="noopener"></a></span>
+    <span class="muted" id="updated"></span>
+  </div>
+</header>
+
+<h2>Treasury</h2>
+<div class="grid" id="stats"></div>
+
+<h2>Loans</h2>
+<div class="loans" id="loans"><p class="muted">Loading…</p></div>
+
+<h2>Members and their record</h2>
+<div class="tablewrap"><table>
+  <thead><tr><th>Member</th><th class="num">Free savings</th><th class="num">Locked as guarantor</th><th class="num">Borrowing limit</th><th class="num">Loans repaid</th><th class="num">Defaults</th><th class="num">Guarantees released</th><th class="num">Guarantees claimed</th><th class="num">Lost to claims</th></tr></thead>
+  <tbody id="members"></tbody>
+</table></div>
+<p class="muted" style="margin-top:8px" id="rule"></p>
+
+<h2>On-chain proof (recorded demo run)</h2>
+<ol class="txs" id="txs"><li class="muted">Loading demo/txs.json…</li></ol>
+
+<h2>Do X → see Y</h2>
+<p class="muted">Uses <a href="https://github.com/near/near-cli-rs" target="_blank" rel="noopener">near CLI</a> against testnet. Replace the <code>you-*.testnet</code> accounts with your own named testnet accounts. Refresh this page after each step.</p>
+<ol class="walk" id="walk"></ol>
+</main>
+
+<script>
+const params = new URLSearchParams(location.search);
+const CONTRACT = params.get("contract") || "surety-coop-mwfopr1t.testnet";
+const RPC = params.get("rpc") || "https://rpc.testnet.near.org";
+const EXPLORER = "https://testnet.nearblocks.io";
+const YOCTO = 10n ** 24n;
+
+const $ = (id) => document.getElementById(id);
+const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+function near(y) {
+  const v = BigInt(y || 0), whole = v / YOCTO, frac = (v % YOCTO).toString().padStart(24, "0").slice(0, 3).replace(/0+$/, "");
+  return whole.toString() + (frac ? "." + frac : "") + " NEAR";
+}
+const short = (a) => esc(String(a).replace(/-coop-[a-z0-9]+\.testnet$/, ""));
+const acct = (a) => `<a class="mono" href="${EXPLORER}/address/${esc(a)}" target="_blank" rel="noopener" title="${esc(a)}">${short(a)}</a>`;
+
+async function rpc(method, params) {
+  const r = await fetch(RPC, { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ jsonrpc: "2.0", id: 1, method, params }) });
+  const j = await r.json();
+  if (j.error) throw new Error(JSON.stringify(j.error));
+  return j.result;
+}
+async function view(account_id, method_name, args = {}) {
+  const res = await rpc("query", { request_type: "call_function", finality: "final", account_id, method_name, args_base64: btoa(JSON.stringify(args)) });
+  return JSON.parse(new TextDecoder().decode(new Uint8Array(res.result)));
+}
+const balanceOf = async (id) => (await rpc("query", { request_type: "view_account", finality: "final", account_id: id })).amount;
+
+function stat(k, v, sub = "") {
+  return `<div class="card stat"><div class="k">${k}</div><div class="v">${v}</div>${sub ? `<div class="muted" style="font-size:13px">${sub}</div>` : ""}</div>`;
+}
+
+function renderLoan(l, dao) {
+  const amt = BigInt(l.amount), repaid = BigInt(l.repaid), claimed = BigInt(l.claimed);
+  const back = repaid + claimed, pct = amt ? Number((back * 100n) / amt) : 0;
+  const due = l.due_at ? new Date(Number(BigInt(l.due_at) / 1000000n)) : null;
+  const pledges = l.pledges.map((p) => `${acct(p.guarantor)} ${near(p.amount)}`).join("<br>") || "<span class='muted'>none yet</span>";
+  const prop = l.proposal_id != null ? `<a href="${EXPLORER}/address/${esc(dao)}" target="_blank" rel="noopener">#${l.proposal_id}</a> on Sputnik` : "<span class='muted'>not filed</span>";
+  return `<div class="card loan">
+    <h3><span>Loan #${l.id} · ${acct(l.borrower)}</span><span class="badge s-${esc(l.status)}">${esc(l.status)}</span></h3>
+    <div class="muted" style="font-size:13px">${esc(l.purpose || "")}</div>
+    <dl>
+      <dt>Amount</dt><dd>${near(l.amount)}</dd>
+      <dt>Guarantors</dt><dd>${pledges}</dd>
+      <dt>Sputnik proposal</dt><dd>${prop}</dd>
+      <dt>Term</dt><dd>${l.duration_sec}s after payout</dd>
+      <dt>Due</dt><dd>${due ? due.toLocaleString() : "—"}</dd>
+      <dt>Repaid by borrower</dt><dd>${near(l.repaid)}</dd>
+      <dt>Claimed from guarantors</dt><dd>${near(l.claimed)}</dd>
+    </dl>
+    <div class="bar" title="${pct}% back in treasury"><i style="width:${Math.min(pct, 100)}%"></i></div>
+    <div class="muted" style="font-size:12px;margin-top:4px">${near(back)} of ${near(l.amount)} back in the DAO treasury</div>
+  </div>`;
+}
+
+function walkthrough(dao) {
+  const C = CONTRACT;
+  const steps = [
+    ["Read the group's state", `near view ${C} get_config\nnear view ${C} get_members`, "The DAO id, limit rule (1 NEAR base, +0.5 per repaid loan or released guarantee) and every member's savings and record. Same numbers as the tables above."],
+    ["Save: three members each deposit savings", `near call ${C} deposit '{}' --accountId you-borrower.testnet --deposit 0.5\nnear call ${C} deposit '{}' --accountId you-g1.testnet --deposit 1\nnear call ${C} deposit '{}' --accountId you-g2.testnet --deposit 1`, "Three new rows in Members. Borrower limit = 1 NEAR."],
+    ["Borrower requests a loan within their limit", `near call ${C} request_loan '{"amount":"1000000000000000000000000","duration_sec":"120","purpose":"stock"}' --accountId you-borrower.testnet`, "New loan card, status Open, no guarantors. Asking above the limit fails with \"amount exceeds your limit\"."],
+    ["Two named-account guarantors lock savings behind it", `near call ${C} pledge '{"loan_id":N,"amount":"500000000000000000000000"}' --accountId you-g1.testnet\nnear call ${C} pledge '{"loan_id":N,"amount":"500000000000000000000000"}' --accountId you-g2.testnet`, "Guarantors' \"Locked\" column rises by 0.5 each and their free savings drop. The borrower cannot pledge on their own loan."],
+    ["File the loan to the DAO (attach the DAO's proposal bond)", `near call ${C} file_proposal '{"loan_id":N}' --accountId you-borrower.testnet --deposit 0.1 --gas 300000000000000\nnear view ${dao} get_last_proposal_id`, "Status Filed and a Sputnik proposal number. On the DAO it is a plain Transfer proposal (treasury → borrower), description contains \"surety:…:loan:N\"."],
+    ["Council approves once in Sputnik / Trezu", `near call ${dao} act_proposal '{"id":P,"action":"VoteApprove","proposal":<kind from get_proposal>}' --accountId <council>.testnet --gas 300000000000000`, "Proposal status Approved; DAO treasury balance drops by the loan amount; borrower receives it. Only the council can do this; Surety cannot move treasury funds."],
+    ["Anyone syncs the loan", `near call ${C} sync '{"loan_id":N}' --accountId you-any.testnet --gas 100000000000000`, "Status Active, with a due date = now + term. The 0.1 NEAR bond is returned to whoever filed."],
+    ["Path A: borrower repays", `near call ${C} repay '{"loan_id":N}' --accountId you-borrower.testnet --deposit 1`, "Status Repaid. Treasury balance rises by 1 NEAR (the repayment goes to the DAO, not to Surety). Guarantors' locks go to 0. Borrower limit 1 → 1.5 NEAR, guarantors' limits +0.5."],
+    ["Path B: borrower stops paying; after the due date anyone claims", `near call ${C} claim '{"loan_id":N}' --accountId you-any.testnet`, "Status Defaulted. Outstanding balance moves from the guarantors' locked savings to the DAO treasury in one transaction, split pro rata to pledges. Borrower limit → 0. Calling it before the due date fails with \"loan is not past due\"."],
+  ];
+  $("walk").innerHTML = steps.map(([x, cmd, y]) => `<li><b>${esc(x)}</b><pre>${esc(cmd)}</pre><div class="see">See: ${esc(y)}</div></li>`).join("");
+}
+
+async function loadTxs() {
+  for (const url of ["txs.json", "../demo/txs.json"]) {
+    try {
+      const r = await fetch(url);
+      if (!r.ok) continue;
+      const txs = await r.json();
+      $("txs").innerHTML = txs.map((t) => {
+        const extra = Object.entries(t).filter(([k]) => !["step", "tx", "url"].includes(k));
+        const ex = extra.length ? `<div class="muted mono">${esc(extra.map(([k, v]) => `${k}: ${typeof v === "object" ? JSON.stringify(v) : v}`).join(" · "))}</div>` : "";
+        return `<li>${esc(t.step)}<br><a class="mono" href="${esc(t.url)}" target="_blank" rel="noopener">${esc(t.tx)}</a>${ex}</li>`;
+      }).join("");
+      return;
+    } catch (e) {}
+  }
+  $("txs").innerHTML = "<li class='muted'>No recorded run found next to this page.</li>";
+}
+
+async function load() {
+  try {
+    const cfg = await view(CONTRACT, "get_config");
+    const dao = cfg.dao;
+    $("dao-link").textContent = dao; $("dao-link").href = `${EXPLORER}/address/${dao}`;
+    $("contract-link").textContent = CONTRACT; $("contract-link").href = `${EXPLORER}/address/${CONTRACT}`;
+    const [loans, members, daoBal, policy, lastPid] = await Promise.all([
+      view(CONTRACT, "get_loans"), view(CONTRACT, "get_members"), balanceOf(dao), view(dao, "get_policy"), view(dao, "get_last_proposal_id"),
+    ]);
+    const council = (policy.roles.find((r) => r.kind && r.kind.Group) || { kind: { Group: [] } }).kind.Group;
+    const lent = loans.filter((l) => ["Active", "Repaid", "Defaulted"].includes(l.status)).reduce((a, l) => a + BigInt(l.amount), 0n);
+    const back = loans.reduce((a, l) => a + BigInt(l.repaid) + BigInt(l.claimed), 0n);
+    const locked = members.reduce((a, m) => a + BigInt(m.locked), 0n);
+    const saved = members.reduce((a, m) => a + BigInt(m.savings) + BigInt(m.locked), 0n);
+    $("stats").innerHTML = [
+      stat("DAO treasury", near(daoBal), `council: ${council.map(acct).join(", ")}`),
+      stat("Paid out by DAO", near(lent), `${loans.filter((l) => ["Active", "Repaid", "Defaulted"].includes(l.status)).length} loans via Sputnik Transfer`),
+      stat("Returned to DAO", near(back), "repayments + guarantor claims"),
+      stat("Member savings", near(saved), `${near(locked)} locked as guarantees`),
+      stat("Sputnik proposals", lastPid, `bond ${near(policy.proposal_bond)}`),
+    ].join("");
+    $("loans").innerHTML = loans.length ? loans.slice().reverse().map((l) => renderLoan(l, dao)).join("") : "<p class='muted'>No loans yet.</p>";
+    $("members").innerHTML = members.map((m) => `<tr>
+      <td>${acct(m.account_id)}</td><td class="num">${near(m.savings)}</td><td class="num">${near(m.locked)}</td>
+      <td class="num"><b>${near(m.limit)}</b></td><td class="num">${m.loans_repaid}</td><td class="num">${m.loans_defaulted}</td>
+      <td class="num">${m.guarantees_released}</td><td class="num">${m.guarantees_claimed}</td><td class="num">${near(m.claimed_from_me)}</td></tr>`).join("");
+    $("rule").textContent = `Limit = 0 after any default, otherwise ${near(cfg.base_limit)} + ${near(cfg.limit_step)} × (loans repaid + guarantees released). Each loan needs ${cfg.min_guarantors} named-account guarantors covering 100% of it.`;
+    $("updated").textContent = "read from chain " + new Date().toLocaleTimeString();
+    walkthrough(dao);
+  } catch (e) {
+    $("loans").innerHTML = `<p class="err">Could not read ${esc(CONTRACT)} from ${esc(RPC)}: ${esc(e.message)}</p>`;
+  }
+}
+load();
+loadTxs();
+</script>
+</body>
+</html>
