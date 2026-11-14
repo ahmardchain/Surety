@@ -78,6 +78,12 @@ guarantor-2-mwfpr6a5.testnet limit 1.5 repaid 0 defaults 0 locked 0
 ```
 That is the whole story in state: loan 0 repaid (borrower limit 1 → 1.5 NEAR, guarantors +0.5), loan 1 defaulted and made whole from guarantors (0.2 repaid + 0.8 claimed = 1 NEAR back), loan 2's proposal removed by the council (pledges released, nothing locked), defaulter's limit 0. Every step has a transaction link in [Live proof](#-live-proof-on-testnet).
 
+**The deployed contract is exactly this source.** Build it and compare hashes:
+```bash
+cd contract && cargo build --target wasm32-unknown-unknown --release && python3 -c 'import hashlib;a="123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz";n=int.from_bytes(hashlib.sha256(open("target/wasm32-unknown-unknown/release/surety.wasm","rb").read()).digest(),"big");o="";exec("while n:\n n,r=divmod(n,58);o=a[r]+o");print(o)'
+```
+**See:** `5pPo34mACSnJ9bPef6VsgqARYE7vhXpmD4EFUo7uZ2pn`, the same `code_hash` that `view_account` returns for `surety-mwfpr6a5.testnet` (Rust 1.86 is picked up from `contract/rust-toolchain.toml`).
+
 ## 🎬 Demo
 
 <a href="https://x.com/Ahmardchain/status/2121431624369705119"><img src="docs/demo-thumbnail.jpg" alt="Watch the Surety demo (1:13)" width="720" /></a>
