@@ -261,7 +261,7 @@ document.addEventListener("click", async (e) => {
 
 // ---------- proof ----------
 async function loadTxs() {
-  for (const url of ["txs.json", "../demo/txs.json"]) {
+  for (const url of ["txs.json", "../demo/txs.json", "https://raw.githubusercontent.com/ahmardchain/surety/main/demo/txs.json"]) {
     try {
       const r = await fetch(url); if (!r.ok) continue;
       const txs = await r.json();
