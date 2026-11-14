@@ -6,6 +6,8 @@ Surety is a small NEAR contract that sits next to an existing **Sputnik DAO v2**
 
 **Live board:** <https://surety.ahmardchain.workers.dev/> (reads the testnet contract and DAO live).
 
+**Demo video (73 s, captions + voiceover):** [`demo/surety-demo.mp4`](demo/surety-demo.mp4). Voice: Microsoft Edge neural TTS (en-US-AndrewNeural); screen: Playwright recording of the live board and of the two key transactions read from NEAR RPC; built by `scripts/video/`.
+
 Track: **Social Money** (shared budgets, reputation-based access on top of Sputnik DAO and Trezu, named accounts). Network: **NEAR testnet**.
 
 ## Problem
