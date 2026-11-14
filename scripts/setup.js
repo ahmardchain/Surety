@@ -1,5 +1,5 @@
 // One-time testnet setup:
-//  1. faucet-funded named accounts: council, ada, bola, chidi, dayo (+ surety contract account)
+//  1. faucet-funded named accounts: council, borrower-a, borrower-b, guarantor-1, guarantor-2 (+ surety contract account)
 //  2. Sputnik DAO v2 via the official factory sputnik-v2.testnet (council = council account, bond 0.1 NEAR)
 //  3. deploy + init the surety contract against that DAO
 //  4. council tops up the DAO treasury
@@ -18,12 +18,12 @@ async function main() {
   s.accounts = s.accounts || {};
 
   // 1. accounts
-  for (const role of ["surety", "council", "ada", "bola", "chidi", "dayo"]) {
+  for (const role of ["surety", "council", "borrower-a", "borrower-b", "guarantor-1", "guarantor-2"]) {
     if (s.accounts[role]) continue;
     if (fs.existsSync(path.join(KEYS_DIR, `${role}.json`))) {
       s.accounts[role] = JSON.parse(fs.readFileSync(path.join(KEYS_DIR, `${role}.json`))).account_id;
     } else {
-      s.accounts[role] = await faucetAccount(`${role}-coop-${sfx}.testnet`, role);
+      s.accounts[role] = await faucetAccount(`${role}-${sfx}.testnet`, role);
       await sleep(1500);
     }
     console.log(role, s.accounts[role]);

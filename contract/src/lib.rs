@@ -139,7 +139,7 @@ fn emit(event: &str, data: Value) {
     ));
 }
 
-/// A NEAR named account (e.g. `ada.testnet`), not a 64-hex implicit or 0x eth-implicit account.
+/// A NEAR named account (e.g. `borrower-a.testnet`), not a 64-hex implicit or 0x eth-implicit account.
 pub fn is_named(account: &AccountId) -> bool {
     let s = account.as_str();
     let hex64 = s.len() == 64 && s.chars().all(|c| c.is_ascii_hexdigit());

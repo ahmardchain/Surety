@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Surety board</title>
 <meta name="description" content="Member-guaranteed loans on a Sputnik DAO: savings, pledges, repayments, defaults and each member's record, read live from NEAR testnet.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='9' fill='%23059669'/%3E%3Cpath d='M21 10.5a5 5 0 0 0-10 0c0 2.8 2.2 5 5 5s5 2.2 5 5a5 5 0 0 1-10 0' fill='none' stroke='%23fff' stroke-width='2.4' stroke-linecap='round'/%3E%3Ccircle cx='21' cy='10.5' r='2.3' fill='%23fff'/%3E%3Ccircle cx='11' cy='20.5' r='2.3' fill='%23fff'/%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet">
@@ -38,8 +39,8 @@ details[open] .chev { transform: rotate(90deg); }
 <!-- top bar -->
 <div class="sticky top-0 z-20 border-b border-zinc-200/70 dark:border-zinc-800/70 bg-white/75 dark:bg-zinc-950/75 backdrop-blur">
   <div class="mx-auto max-w-6xl px-4 h-14 flex items-center justify-between gap-3">
-    <div class="flex items-center gap-2 font-semibold">
-      <span class="grid place-items-center h-7 w-7 rounded-lg bg-brand-600 text-white"><i data-lucide="shield-check" class="h-4 w-4"></i></span>
+    <div class="flex items-center gap-2.5 font-semibold tracking-tight">
+      <svg viewBox="0 0 32 32" class="h-8 w-8" aria-hidden="true"><defs><linearGradient id="sg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#10b981"/><stop offset="1" stop-color="#0e7490"/></linearGradient></defs><rect width="32" height="32" rx="9" fill="url(#sg)"/><path d="M21 10.5a5 5 0 0 0-10 0c0 2.8 2.2 5 5 5s5 2.2 5 5a5 5 0 0 1-10 0" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round"/><circle cx="21" cy="10.5" r="2.3" fill="#fff"/><circle cx="11" cy="20.5" r="2.3" fill="#fff"/></svg>
       Surety
       <span class="ml-1 rounded-full border border-zinc-200 dark:border-zinc-800 px-2 py-0.5 text-[11px] font-medium text-zinc-500">NEAR testnet</span>
     </div>
@@ -127,7 +128,7 @@ details[open] .chev { transform: rotate(90deg); }
 
 <script>
 const params = new URLSearchParams(location.search);
-const CONTRACT = params.get("contract") || "surety-coop-mwfopr1t.testnet";
+const CONTRACT = params.get("contract") || "surety-mwfpr6a5.testnet";
 const RPC = params.get("rpc") || "https://rpc.testnet.near.org";
 const EXPLORER = "https://testnet.nearblocks.io";
 const YOCTO = 10n ** 24n;
@@ -139,11 +140,11 @@ function near(y, unit = true) {
   const v = BigInt(y || 0), w = v / YOCTO, f = (v % YOCTO).toString().padStart(24, "0").slice(0, 3).replace(/0+$/, "");
   return w + (f ? "." + f : "") + (unit ? " NEAR" : "");
 }
-const short = (a) => esc(String(a).replace(/-coop-[a-z0-9]+\.testnet$/, ""));
+const short = (a) => esc(String(a).replace(/-[a-z0-9]{8}\.testnet$/, ""));
 const avatarColors = ["bg-emerald-500", "bg-sky-500", "bg-violet-500", "bg-amber-500", "bg-rose-500", "bg-teal-500"];
 function avatar(a) {
   const n = String(a), c = avatarColors[[...n].reduce((s, ch) => s + ch.charCodeAt(0), 0) % avatarColors.length];
-  return `<span class="grid place-items-center h-6 w-6 shrink-0 rounded-full ${c} text-white text-[11px] font-semibold uppercase">${esc(n[0])}</span>`;
+  return `<span class="grid place-items-center h-6 w-6 shrink-0 rounded-full ${c} text-white text-[11px] font-semibold uppercase">${esc(String(n).replace(/-[a-z0-9]{8}\.testnet$/, "").split("-").map((w) => w[0]).join("").slice(0, 2))}</span>`;
 }
 const person = (a) => `<a href="${EXPLORER}/address/${esc(a)}" target="_blank" rel="noopener" title="${esc(a)}" class="inline-flex items-center gap-2 hover:underline underline-offset-2">${avatar(a)}<span class="font-medium">${short(a)}</span></a>`;
 
@@ -269,7 +270,7 @@ async function loadTxs() {
           <div class="flex items-center gap-2 font-medium"><i data-lucide="${icon}" class="h-4 w-4 text-zinc-500"></i>${title}<span class="ml-auto text-xs text-zinc-400">${list.length} tx</span></div>
           <ol class="mt-4 relative border-l border-zinc-200 dark:border-zinc-800 ml-1.5 space-y-4">
             ${list.map((t) => {
-              const step = t.step.replace(/^Loan [AB]: /, "").replace(/-coop-[a-z0-9]+\.testnet/g, "");
+              const step = t.step.replace(/^Loan [AB]: /, "").replace(/-[a-z0-9]{8}\.testnet/g, "");
               const extra = Object.entries(t).filter(([k]) => !["step", "tx", "url", "contract", "dao", "council"].includes(k))
                 .map(([k, v]) => `<span class="rounded bg-zinc-100 dark:bg-zinc-900 px-1.5 py-0.5">${esc(k.replace(/_/g, " "))}: ${esc(typeof v === "object" ? Object.entries(v).map(([a, b]) => short(a) + " " + b).join(", ") : v)}</span>`).join(" ");
               return `<li class="pl-4"><span class="absolute -left-[5px] mt-1.5 h-2.5 w-2.5 rounded-full border-2 border-white dark:border-zinc-950 bg-brand-500"></span>

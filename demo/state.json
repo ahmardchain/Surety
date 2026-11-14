@@ -1,14 +1,14 @@
 {
-  "suffix": "mwfopr1t",
+  "suffix": "mwfpr6a5",
   "accounts": {
-    "surety": "surety-coop-mwfopr1t.testnet",
-    "council": "council-coop-mwfopr1t.testnet",
-    "ada": "ada-coop-mwfopr1t.testnet",
-    "bola": "bola-coop-mwfopr1t.testnet",
-    "chidi": "chidi-coop-mwfopr1t.testnet",
-    "dayo": "dayo-coop-mwfopr1t.testnet"
+    "surety": "surety-mwfpr6a5.testnet",
+    "council": "council-mwfpr6a5.testnet",
+    "borrower-a": "borrower-a-mwfpr6a5.testnet",
+    "borrower-b": "borrower-b-mwfpr6a5.testnet",
+    "guarantor-1": "guarantor-1-mwfpr6a5.testnet",
+    "guarantor-2": "guarantor-2-mwfpr6a5.testnet"
   },
-  "dao": "coop-mwfopr1t.sputnik-v2.testnet",
+  "dao": "coop-mwfpr6a5.sputnik-v2.testnet",
   "deployed": true,
   "funded": true,
   "demo": {

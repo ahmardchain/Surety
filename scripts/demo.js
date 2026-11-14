@@ -1,6 +1,6 @@
 // End-to-end testnet demo on ONE Sputnik DAO with TWO loans:
-//   Loan A (ada): guaranteed by bola + chidi -> council approves in Sputnik -> ada repays -> limits rise.
-//   Loan B (dayo): guaranteed by bola + chidi -> council approves -> dayo pays only part -> past due -> anyone calls claim
+//   Loan A (borrower-a): guaranteed by guarantor-1 + guarantor-2 -> council approves in Sputnik -> borrower-a repays -> limits rise.
+//   Loan B (borrower-b): same guarantors -> council approves -> borrower-b pays only part -> past due -> anyone calls claim
 //                  -> guarantors' locked savings move to the DAO treasury in one call.
 // Every step is written with its tx hash to demo/txs.json.
 // Usage: KEYS_DIR=/path/outside/repo node demo.js   (after setup.js)
@@ -31,7 +31,7 @@ async function runLoan(tag, borrower, amount, seconds, purpose) {
   let out = await call(borrower, S, "request_loan", { amount: NEAR(amount), duration_sec: String(seconds), purpose });
   const id = returnValue(out);
   logTx(`${tag}: ${borrower} requests loan #${id} of ${amount} NEAR, ${seconds}s term`, out, { loan_id: id, limit_before: await limit(borrower) });
-  for (const g of [A.bola, A.chidi]) {
+  for (const g of [A["guarantor-1"], A["guarantor-2"]]) {
     out = await call(g, S, "pledge", { loan_id: id, amount: half });
     logTx(`${tag}: ${g} pledges ${fmt(half)} NEAR of savings behind loan #${id}`, out);
   }
@@ -44,7 +44,7 @@ async function runLoan(tag, borrower, amount, seconds, purpose) {
     dao_balance_before: fmt(daoBefore),
     dao_balance_after: fmt(await balance(DAO)),
   });
-  out = await call(A.ada, S, "sync", { loan_id: id });
+  out = await call(A["borrower-a"], S, "sync", { loan_id: id });
   const loan = await view(S, "get_loan", { loan_id: id });
   logTx(`${tag}: sync reads proposal status -> loan #${id} ${loan.status}`, out, { status: loan.status, due_at_ns: loan.due_at });
   return id;
@@ -53,7 +53,7 @@ async function runLoan(tag, borrower, amount, seconds, purpose) {
 async function main() {
   s.demo = s.demo || {};
   if (!s.demo.deposits) {
-    for (const [who, amt] of [[A.ada, "0.5"], [A.dayo, "0.5"], [A.bola, "1.5"], [A.chidi, "1.5"]]) {
+    for (const [who, amt] of [[A["borrower-a"], "0.5"], [A["borrower-b"], "0.5"], [A["guarantor-1"], "1.5"], [A["guarantor-2"], "1.5"]]) {
       const out = await call(who, S, "deposit", {}, NEAR(amt));
       logTx(`${who} deposits ${amt} NEAR savings`, out);
     }
@@ -62,24 +62,24 @@ async function main() {
   }
 
   if (s.demo.loanA === undefined) {
-    const id = await runLoan("Loan A", A.ada, "1", 3600, "market stall restock");
-    const before = await limit(A.ada);
-    const out = await call(A.ada, S, "repay", { loan_id: id }, NEAR("1"));
-    logTx(`Loan A: ada repays 1 NEAR -> forwarded to DAO treasury; pledges released`, out, {
+    const id = await runLoan("Loan A", A["borrower-a"], "1", 3600, "inventory restock");
+    const before = await limit(A["borrower-a"]);
+    const out = await call(A["borrower-a"], S, "repay", { loan_id: id }, NEAR("1"));
+    logTx(`Loan A: ${A["borrower-a"]} repays 1 NEAR -> forwarded to DAO treasury; pledges released`, out, {
       status: (await view(S, "get_loan", { loan_id: id })).status,
-      ada_limit_before: before,
-      ada_limit_after: await limit(A.ada),
-      bola_limit_after: await limit(A.bola),
-      chidi_limit_after: await limit(A.chidi),
+      borrower_a_limit_before: before,
+      borrower_a_limit_after: await limit(A["borrower-a"]),
+      guarantor_1_limit_after: await limit(A["guarantor-1"]),
+      guarantor_2_limit_after: await limit(A["guarantor-2"]),
     });
     s.demo.loanA = id;
     saveState(s);
   }
 
   if (s.demo.loanB === undefined) {
-    const id = await runLoan("Loan B", A.dayo, "1", LOAN_B_SECONDS, "school fees");
-    const out = await call(A.dayo, S, "repay", { loan_id: id }, NEAR("0.2"));
-    logTx(`Loan B: dayo repays only 0.2 NEAR, then stops`, out, { outstanding: "0.8 NEAR" });
+    const id = await runLoan("Loan B", A["borrower-b"], "1", LOAN_B_SECONDS, "equipment repair");
+    const out = await call(A["borrower-b"], S, "repay", { loan_id: id }, NEAR("0.2"));
+    logTx(`Loan B: ${A["borrower-b"]} repays only 0.2 NEAR, then stops`, out, { outstanding: "0.8 NEAR" });
     s.demo.loanB = id;
     saveState(s);
   }
@@ -92,7 +92,7 @@ async function main() {
       await sleep(waitMs);
     }
     const daoBefore = await balance(DAO);
-    const g = async () => Object.fromEntries(await Promise.all([A.bola, A.chidi].map(async (x) => [x, (await view(S, "get_member", { account_id: x })).locked])));
+    const g = async () => Object.fromEntries(await Promise.all([A["guarantor-1"], A["guarantor-2"]].map(async (x) => [x, (await view(S, "get_member", { account_id: x })).locked])));
     const lockedBefore = await g();
     const out = await call(A.council, S, "claim", { loan_id: s.demo.loanB });
     await sleep(3000);
@@ -101,7 +101,7 @@ async function main() {
       dao_balance_before: fmt(daoBefore),
       dao_balance_after: fmt(await balance(DAO)),
       guarantor_locked_before: Object.fromEntries(Object.entries(lockedBefore).map(([k, v]) => [k, fmt(v)])),
-      dayo_limit_after: await limit(A.dayo),
+      borrower_b_limit_after: await limit(A["borrower-b"]),
     });
     s.demo.claimed = true;
     saveState(s);

@@ -1,151 +1,151 @@
 [
   {
     "step": "Create Sputnik DAO via sputnik-v2.testnet factory",
-    "tx": "GFu4K4VvUW1aENGRT9HAWsYHuXwNpcKEo7KKLgFUGg6b",
-    "url": "https://testnet.nearblocks.io/txns/GFu4K4VvUW1aENGRT9HAWsYHuXwNpcKEo7KKLgFUGg6b",
-    "dao": "coop-mwfopr1t.sputnik-v2.testnet",
-    "council": "council-coop-mwfopr1t.testnet",
+    "tx": "6k6R2z23RbjewibWoZg9ad8GZrUskTHmH8pFGUUJU3CU",
+    "url": "https://testnet.nearblocks.io/txns/6k6R2z23RbjewibWoZg9ad8GZrUskTHmH8pFGUUJU3CU",
+    "dao": "coop-mwfpr6a5.sputnik-v2.testnet",
+    "council": "council-mwfpr6a5.testnet",
     "proposal_bond": "0.1 NEAR"
   },
   {
     "step": "Deploy surety contract",
-    "tx": "BT3UmsSMgBuNEwp6XxNKDXXm6TpcTqiBevJgdFrnjJZR",
-    "url": "https://testnet.nearblocks.io/txns/BT3UmsSMgBuNEwp6XxNKDXXm6TpcTqiBevJgdFrnjJZR",
-    "contract": "surety-coop-mwfopr1t.testnet"
+    "tx": "DGGYfXXqgFVRmWDYr4JWmrT344SjYhM78TbgDcziqidw",
+    "url": "https://testnet.nearblocks.io/txns/DGGYfXXqgFVRmWDYr4JWmrT344SjYhM78TbgDcziqidw",
+    "contract": "surety-mwfpr6a5.testnet"
   },
   {
     "step": "Init surety (dao, base limit 1 NEAR, +0.5 NEAR per repaid loan/guarantee, 2 guarantors)",
-    "tx": "5ncb16LSHg9nB64zaxdZ4Uq9ShiNzp3PTK2Y4WuPQTY7",
-    "url": "https://testnet.nearblocks.io/txns/5ncb16LSHg9nB64zaxdZ4Uq9ShiNzp3PTK2Y4WuPQTY7",
-    "dao": "coop-mwfopr1t.sputnik-v2.testnet"
+    "tx": "8bVrYGHWGHd8X1pMvjdrALRvu26KVUYoDJgePxfWwtqc",
+    "url": "https://testnet.nearblocks.io/txns/8bVrYGHWGHd8X1pMvjdrALRvu26KVUYoDJgePxfWwtqc",
+    "dao": "coop-mwfpr6a5.sputnik-v2.testnet"
   },
   {
     "step": "Council tops up DAO treasury with 2 NEAR",
-    "tx": "8J5Lmc9FBuGATMk7SgisoS2wV68gpWB22oHSgUWd9sU4",
-    "url": "https://testnet.nearblocks.io/txns/8J5Lmc9FBuGATMk7SgisoS2wV68gpWB22oHSgUWd9sU4",
-    "dao": "coop-mwfopr1t.sputnik-v2.testnet"
+    "tx": "Cjy8shichHAxpeu48ZHARVaDTguL7FMGsyRUshvuyGns",
+    "url": "https://testnet.nearblocks.io/txns/Cjy8shichHAxpeu48ZHARVaDTguL7FMGsyRUshvuyGns",
+    "dao": "coop-mwfpr6a5.sputnik-v2.testnet"
   },
   {
-    "step": "ada-coop-mwfopr1t.testnet deposits 0.5 NEAR savings",
-    "tx": "A5AqRK9P8pgRMP933x336F6uJdL3rCcn3DXQ5sEJ7Hg6",
-    "url": "https://testnet.nearblocks.io/txns/A5AqRK9P8pgRMP933x336F6uJdL3rCcn3DXQ5sEJ7Hg6"
+    "step": "borrower-a-mwfpr6a5.testnet deposits 0.5 NEAR savings",
+    "tx": "sHghM5vtFXFm3yRCH6GKxjXhPNc1eUucBknBAd2vesH",
+    "url": "https://testnet.nearblocks.io/txns/sHghM5vtFXFm3yRCH6GKxjXhPNc1eUucBknBAd2vesH"
   },
   {
-    "step": "dayo-coop-mwfopr1t.testnet deposits 0.5 NEAR savings",
-    "tx": "5o7Y5nmW7Fxzt1vG3JGP4HuorwUoBeWoBEMaqJYYByS6",
-    "url": "https://testnet.nearblocks.io/txns/5o7Y5nmW7Fxzt1vG3JGP4HuorwUoBeWoBEMaqJYYByS6"
+    "step": "borrower-b-mwfpr6a5.testnet deposits 0.5 NEAR savings",
+    "tx": "52XsYRu24eyYja3MZmUq5i899AKyYqiWqPm6tSzxcktC",
+    "url": "https://testnet.nearblocks.io/txns/52XsYRu24eyYja3MZmUq5i899AKyYqiWqPm6tSzxcktC"
   },
   {
-    "step": "bola-coop-mwfopr1t.testnet deposits 1.5 NEAR savings",
-    "tx": "GWfFTh2QD8m1Akg9WarHLTQG7tq9xFT1o53cKFNwTX7K",
-    "url": "https://testnet.nearblocks.io/txns/GWfFTh2QD8m1Akg9WarHLTQG7tq9xFT1o53cKFNwTX7K"
+    "step": "guarantor-1-mwfpr6a5.testnet deposits 1.5 NEAR savings",
+    "tx": "9phGHZSRMMunqLrraZEWTmNpfQfmiLpGdZe28Uy7z252",
+    "url": "https://testnet.nearblocks.io/txns/9phGHZSRMMunqLrraZEWTmNpfQfmiLpGdZe28Uy7z252"
   },
   {
-    "step": "chidi-coop-mwfopr1t.testnet deposits 1.5 NEAR savings",
-    "tx": "FdFmZbVaWfK9A5PsehuoxHThrTJzKezJsmNmfomA3Yx2",
-    "url": "https://testnet.nearblocks.io/txns/FdFmZbVaWfK9A5PsehuoxHThrTJzKezJsmNmfomA3Yx2"
+    "step": "guarantor-2-mwfpr6a5.testnet deposits 1.5 NEAR savings",
+    "tx": "4VJagrmht3nqxhUbpPf2jF9dBj8VZ3iednEYUSjA5iHr",
+    "url": "https://testnet.nearblocks.io/txns/4VJagrmht3nqxhUbpPf2jF9dBj8VZ3iednEYUSjA5iHr"
   },
   {
-    "step": "Loan A: ada-coop-mwfopr1t.testnet requests loan #0 of 1 NEAR, 3600s term",
-    "tx": "CTdqVybiMbXb2wXxydZFQVASvHonf86oTNhWqESr1pgC",
-    "url": "https://testnet.nearblocks.io/txns/CTdqVybiMbXb2wXxydZFQVASvHonf86oTNhWqESr1pgC",
+    "step": "Loan A: borrower-a-mwfpr6a5.testnet requests loan #0 of 1 NEAR, 3600s term",
+    "tx": "8LdtxUkP85aD1mrfyceTX5sH8VEYLhxLCAN2uTnBJgh7",
+    "url": "https://testnet.nearblocks.io/txns/8LdtxUkP85aD1mrfyceTX5sH8VEYLhxLCAN2uTnBJgh7",
     "loan_id": 0,
     "limit_before": "1"
   },
   {
-    "step": "Loan A: bola-coop-mwfopr1t.testnet pledges 0.5 NEAR of savings behind loan #0",
-    "tx": "9TP7BsijGhiZDzzZTt3LJHBswqWkzSYJBuciRmzHhYJv",
-    "url": "https://testnet.nearblocks.io/txns/9TP7BsijGhiZDzzZTt3LJHBswqWkzSYJBuciRmzHhYJv"
+    "step": "Loan A: guarantor-1-mwfpr6a5.testnet pledges 0.5 NEAR of savings behind loan #0",
+    "tx": "C2NP4Yd3rPDWNS5XKDBzv55grHUYzfJ6eCTULhwMXWpf",
+    "url": "https://testnet.nearblocks.io/txns/C2NP4Yd3rPDWNS5XKDBzv55grHUYzfJ6eCTULhwMXWpf"
   },
   {
-    "step": "Loan A: chidi-coop-mwfopr1t.testnet pledges 0.5 NEAR of savings behind loan #0",
-    "tx": "CW26JXrzfLRfhkDbnudkWb1theVTC57VmoN19rbDaYkb",
-    "url": "https://testnet.nearblocks.io/txns/CW26JXrzfLRfhkDbnudkWb1theVTC57VmoN19rbDaYkb"
+    "step": "Loan A: guarantor-2-mwfpr6a5.testnet pledges 0.5 NEAR of savings behind loan #0",
+    "tx": "Bsrh2Ct7zipVxhyutWGhzehnoEYMQRoxJGLSdNNt2uwg",
+    "url": "https://testnet.nearblocks.io/txns/Bsrh2Ct7zipVxhyutWGhzehnoEYMQRoxJGLSdNNt2uwg"
   },
   {
-    "step": "Loan A: surety files Sputnik Transfer proposal #0 on coop-mwfopr1t.sputnik-v2.testnet (bond 0.1 NEAR)",
-    "tx": "Hofi7792vC4sayQEh9kjkTh8wcrPkbj93ssk38VCzvUb",
-    "url": "https://testnet.nearblocks.io/txns/Hofi7792vC4sayQEh9kjkTh8wcrPkbj93ssk38VCzvUb",
+    "step": "Loan A: surety files Sputnik Transfer proposal #0 on coop-mwfpr6a5.sputnik-v2.testnet (bond 0.1 NEAR)",
+    "tx": "FEVy9gMf5wbRTZhFk2XjBAxQf3SDPyEFzGq6ZzAcVBax",
+    "url": "https://testnet.nearblocks.io/txns/FEVy9gMf5wbRTZhFk2XjBAxQf3SDPyEFzGq6ZzAcVBax",
     "proposal_id": 0
   },
   {
-    "step": "Loan A: council approves proposal #0 once in Sputnik -> DAO pays 1 NEAR to ada-coop-mwfopr1t.testnet",
-    "tx": "CVXz8L1eJNWU4mxHx5tPeTmHwSJCU1L74Er18GLnTejA",
-    "url": "https://testnet.nearblocks.io/txns/CVXz8L1eJNWU4mxHx5tPeTmHwSJCU1L74Er18GLnTejA",
+    "step": "Loan A: council approves proposal #0 once in Sputnik -> DAO pays 1 NEAR to borrower-a-mwfpr6a5.testnet",
+    "tx": "26hYDRXjTrdxSGakPsv75Kx4rzhhr99nwtVHHKEh5qj6",
+    "url": "https://testnet.nearblocks.io/txns/26hYDRXjTrdxSGakPsv75Kx4rzhhr99nwtVHHKEh5qj6",
     "dao_balance_before": "8.1",
     "dao_balance_after": "7"
   },
   {
     "step": "Loan A: sync reads proposal status -> loan #0 Active",
-    "tx": "FtftLbQetfz3yNtxExdQ5QvmtD5bLerJDSbjMfiSbed1",
-    "url": "https://testnet.nearblocks.io/txns/FtftLbQetfz3yNtxExdQ5QvmtD5bLerJDSbjMfiSbed1",
+    "tx": "Aq8qUjdaMH5SXvAuA6XWMtDu1tMGvXG9UbQNzhMR8BDA",
+    "url": "https://testnet.nearblocks.io/txns/Aq8qUjdaMH5SXvAuA6XWMtDu1tMGvXG9UbQNzhMR8BDA",
     "status": "Active",
-    "due_at_ns": "1794621110061863352"
+    "due_at_ns": "1794622725817244232"
   },
   {
-    "step": "Loan A: ada repays 1 NEAR -> forwarded to DAO treasury; pledges released",
-    "tx": "ymXdFUqmGHf5sTcQYNn5dKmsJiKdUi7Ur1NrjH2rAie",
-    "url": "https://testnet.nearblocks.io/txns/ymXdFUqmGHf5sTcQYNn5dKmsJiKdUi7Ur1NrjH2rAie",
+    "step": "Loan A: borrower-a-mwfpr6a5.testnet repays 1 NEAR -> forwarded to DAO treasury; pledges released",
+    "tx": "81JeQZDs6Ep6pt2fuzeXc5JSBkW9d3JS938nLwsQMLUJ",
+    "url": "https://testnet.nearblocks.io/txns/81JeQZDs6Ep6pt2fuzeXc5JSBkW9d3JS938nLwsQMLUJ",
     "status": "Repaid",
-    "ada_limit_before": "1",
-    "ada_limit_after": "1.5",
-    "bola_limit_after": "1.5",
-    "chidi_limit_after": "1.5"
+    "borrower_a_limit_before": "1",
+    "borrower_a_limit_after": "1.5",
+    "guarantor_1_limit_after": "1.5",
+    "guarantor_2_limit_after": "1.5"
   },
   {
-    "step": "Loan B: dayo-coop-mwfopr1t.testnet requests loan #1 of 1 NEAR, 90s term",
-    "tx": "GuN4vQNJgcpDyxYNx8ePsfvpD2tDHN2yaZgLjAn9MyJy",
-    "url": "https://testnet.nearblocks.io/txns/GuN4vQNJgcpDyxYNx8ePsfvpD2tDHN2yaZgLjAn9MyJy",
+    "step": "Loan B: borrower-b-mwfpr6a5.testnet requests loan #1 of 1 NEAR, 90s term",
+    "tx": "GXVmcVwpHe88TYfrum6hN9LJZ9HBSvab9RwdRfRnvwKZ",
+    "url": "https://testnet.nearblocks.io/txns/GXVmcVwpHe88TYfrum6hN9LJZ9HBSvab9RwdRfRnvwKZ",
     "loan_id": 1,
     "limit_before": "1"
   },
   {
-    "step": "Loan B: bola-coop-mwfopr1t.testnet pledges 0.5 NEAR of savings behind loan #1",
-    "tx": "BbJnp8RmhFhhX8Y8aQSfN1Anwgf5A8RnSDFrXPj3WYX5",
-    "url": "https://testnet.nearblocks.io/txns/BbJnp8RmhFhhX8Y8aQSfN1Anwgf5A8RnSDFrXPj3WYX5"
+    "step": "Loan B: guarantor-1-mwfpr6a5.testnet pledges 0.5 NEAR of savings behind loan #1",
+    "tx": "FUT4aqxFJv4WDiUR5ECo2RZ4ZcnyYR6jPJetNB7jZij",
+    "url": "https://testnet.nearblocks.io/txns/FUT4aqxFJv4WDiUR5ECo2RZ4ZcnyYR6jPJetNB7jZij"
   },
   {
-    "step": "Loan B: chidi-coop-mwfopr1t.testnet pledges 0.5 NEAR of savings behind loan #1",
-    "tx": "6VgSUtiBEgDLvqA17p3DvgypLq9rHz3RvKYnXvPeH7zi",
-    "url": "https://testnet.nearblocks.io/txns/6VgSUtiBEgDLvqA17p3DvgypLq9rHz3RvKYnXvPeH7zi"
+    "step": "Loan B: guarantor-2-mwfpr6a5.testnet pledges 0.5 NEAR of savings behind loan #1",
+    "tx": "FbnRRz5sW5wjidgbBS8TX2aPr33ArsHtAd2dz5mtuv1f",
+    "url": "https://testnet.nearblocks.io/txns/FbnRRz5sW5wjidgbBS8TX2aPr33ArsHtAd2dz5mtuv1f"
   },
   {
-    "step": "Loan B: surety files Sputnik Transfer proposal #1 on coop-mwfopr1t.sputnik-v2.testnet (bond 0.1 NEAR)",
-    "tx": "2A85EYKZqVRLtZCWDDKVyoaGT3QsnWLnVJFtpLbFx72M",
-    "url": "https://testnet.nearblocks.io/txns/2A85EYKZqVRLtZCWDDKVyoaGT3QsnWLnVJFtpLbFx72M",
+    "step": "Loan B: surety files Sputnik Transfer proposal #1 on coop-mwfpr6a5.sputnik-v2.testnet (bond 0.1 NEAR)",
+    "tx": "9SiGfr2YpChuq5xXSKUJn7pveetrYbR3NouuZZDmhU66",
+    "url": "https://testnet.nearblocks.io/txns/9SiGfr2YpChuq5xXSKUJn7pveetrYbR3NouuZZDmhU66",
     "proposal_id": 1
   },
   {
-    "step": "Loan B: council approves proposal #1 once in Sputnik -> DAO pays 1 NEAR to dayo-coop-mwfopr1t.testnet",
-    "tx": "JDvoaT6YvZP2RcgsMuNnut9D8nXYGm7PjC95QJBeU8gH",
-    "url": "https://testnet.nearblocks.io/txns/JDvoaT6YvZP2RcgsMuNnut9D8nXYGm7PjC95QJBeU8gH",
+    "step": "Loan B: council approves proposal #1 once in Sputnik -> DAO pays 1 NEAR to borrower-b-mwfpr6a5.testnet",
+    "tx": "4diqL6dnVdKsXrSJbBU4J1BD5nqXRREvPdzPEHMYAQFP",
+    "url": "https://testnet.nearblocks.io/txns/4diqL6dnVdKsXrSJbBU4J1BD5nqXRREvPdzPEHMYAQFP",
     "dao_balance_before": "8.1",
     "dao_balance_after": "7"
   },
   {
     "step": "Loan B: sync reads proposal status -> loan #1 Active",
-    "tx": "pEqRSDev4rUD7o8f4CyXnPtizGpWDSvXxNhoXwNEmYK",
-    "url": "https://testnet.nearblocks.io/txns/pEqRSDev4rUD7o8f4CyXnPtizGpWDSvXxNhoXwNEmYK",
+    "tx": "2Kmn47hoUxCc8JZV12x2zD2GMpDC3GFKotWLsA6V2e2p",
+    "url": "https://testnet.nearblocks.io/txns/2Kmn47hoUxCc8JZV12x2zD2GMpDC3GFKotWLsA6V2e2p",
     "status": "Active",
-    "due_at_ns": "1794617725154503458"
+    "due_at_ns": "1794619339929071799"
   },
   {
-    "step": "Loan B: dayo repays only 0.2 NEAR, then stops",
-    "tx": "7bU91TVG7rrcLikBSdHfHrpXu9kqRG6N288VCnhWDJ66",
-    "url": "https://testnet.nearblocks.io/txns/7bU91TVG7rrcLikBSdHfHrpXu9kqRG6N288VCnhWDJ66",
+    "step": "Loan B: borrower-b-mwfpr6a5.testnet repays only 0.2 NEAR, then stops",
+    "tx": "A2V2byrGYyvuwH7EW1SrDV6mBGhPtVujWhGFeBijPaVz",
+    "url": "https://testnet.nearblocks.io/txns/A2V2byrGYyvuwH7EW1SrDV6mBGhPtVujWhGFeBijPaVz",
     "outstanding": "0.8 NEAR"
   },
   {
     "step": "Loan B: past due -> claim moves guarantors' locked savings (0.8 NEAR) to DAO treasury in one call",
-    "tx": "4RWTSDRgdABqkDbBN1FsJkNjj3otc49242xbmAFRhjSr",
-    "url": "https://testnet.nearblocks.io/txns/4RWTSDRgdABqkDbBN1FsJkNjj3otc49242xbmAFRhjSr",
+    "tx": "4rJyNuqXD8JHr2jyWQnRWPadMAaH1p5btsLNJamgCZtq",
+    "url": "https://testnet.nearblocks.io/txns/4rJyNuqXD8JHr2jyWQnRWPadMAaH1p5btsLNJamgCZtq",
     "status": "Defaulted",
     "dao_balance_before": "7.2",
     "dao_balance_after": "8",
     "guarantor_locked_before": {
-      "bola-coop-mwfopr1t.testnet": "0.5",
-      "chidi-coop-mwfopr1t.testnet": "0.5"
+      "guarantor-1-mwfpr6a5.testnet": "0.5",
+      "guarantor-2-mwfpr6a5.testnet": "0.5"
     },
-    "dayo_limit_after": "0"
+    "borrower_b_limit_after": "0"
   }
 ]
