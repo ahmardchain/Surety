@@ -6,3 +6,4 @@ scripts/.keys/
 /neardev
 web/dist/
 scripts/video/.work/
+demo/*.mp4

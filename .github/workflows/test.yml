@@ -1,0 +1,28 @@
+name: tests
+on:
+  push:
+  pull_request:
+jobs:
+  contract:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: contract
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install pinned Rust toolchain (contract/rust-toolchain.toml)
+        run: rustup show
+      - name: Unit tests
+        run: cargo test
+      - name: Build wasm
+        run: cargo build --target wasm32-unknown-unknown --release
+  board:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: cd scripts && npm ci
+      - name: Build board + Worker bundle
+        run: node scripts/build-worker.js
