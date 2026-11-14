@@ -109,8 +109,8 @@ details[open] .chev { transform: rotate(90deg); }
   <!-- proof -->
   <section class="mt-10">
     <h2 class="text-lg font-semibold tracking-tight">On-chain proof</h2>
-    <p class="mt-1 text-sm text-zinc-500">The recorded demo run: one DAO, two loans. Every step links to its transaction on NearBlocks.</p>
-    <div id="txs" class="mt-4 grid gap-4 lg:grid-cols-3"><div class="skeleton h-64 rounded-xl"></div><div class="skeleton h-64 rounded-xl"></div><div class="skeleton h-64 rounded-xl"></div></div>
+    <p class="mt-1 text-sm text-zinc-500">The recorded demo run: one DAO, three loans (repaid, defaulted, proposal removed). Every step links to its transaction on NearBlocks.</p>
+    <div id="txs" class="mt-4 grid gap-4 md:grid-cols-2"><div class="skeleton h-64 rounded-xl"></div><div class="skeleton h-64 rounded-xl"></div><div class="skeleton h-64 rounded-xl"></div></div>
   </section>
 
   <!-- walkthrough -->
@@ -196,7 +196,8 @@ function loanCard(l, dao) {
   const pR = amt ? Number((repaid * 1000n) / amt) / 10 : 0, pC = amt ? Number((claimed * 1000n) / amt) / 10 : 0;
   const due = l.due_at ? new Date(Number(BigInt(l.due_at) / 1000000n)) : null;
   const row = (k, v) => `<div class="flex items-start justify-between gap-4 py-2"><dt class="text-zinc-500">${k}</dt><dd class="text-right tabular-nums">${v}</dd></div>`;
-  const pledges = l.pledges.length ? l.pledges.map((p) => `<div class="flex items-center justify-end gap-3">${person(p.guarantor)}<span class="tabular-nums text-zinc-500">${near(p.amount)}</span></div>`).join("") : `<span class="text-zinc-400">none yet</span>`;
+  const cancelled = l.status === "Cancelled";
+  const pledges = l.pledges.length ? l.pledges.map((p) => `<div class="flex items-center justify-end gap-3">${person(p.guarantor)}<span class="tabular-nums text-zinc-500">${near(p.amount)}${cancelled ? " · released" : ""}</span></div>`).join("") : `<span class="text-zinc-400">none yet</span>`;
   return `<article class="fade-in rounded-xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 p-5 shadow-card">
     <header class="flex items-start justify-between gap-3">
       <div><div class="text-xs font-mono text-zinc-400">LOAN #${l.id}</div><div class="mt-1 flex items-center gap-2 text-base">${person(l.borrower)}<span class="text-zinc-400">·</span><span class="font-semibold tabular-nums">${near(l.amount)}</span></div>
@@ -210,7 +211,7 @@ function loanCard(l, dao) {
       ${row("Repaid by borrower", near(l.repaid))}
       ${row("Claimed from guarantors", near(l.claimed))}
     </dl>
-    <div class="mt-4">
+    ${cancelled ? `<div class="mt-4 rounded-lg bg-zinc-50 dark:bg-zinc-900 px-3 py-2 text-xs text-zinc-500">Never paid out: the Sputnik proposal was ${l.proposal_id != null ? "rejected or removed" : "not filed"}. Treasury untouched, guarantors' pledges released.</div>` : `<div class="mt-4">
       <div class="flex h-2 overflow-hidden rounded-full bg-zinc-100 dark:bg-zinc-900">
         <div class="bg-emerald-500" style="width:${pR}%"></div><div class="bg-rose-500" style="width:${pC}%"></div>
       </div>
@@ -218,7 +219,7 @@ function loanCard(l, dao) {
         <span><b class="text-zinc-700 dark:text-zinc-300">${near(back)}</b> of ${near(l.amount)} back in the treasury</span>
         <span class="flex gap-3"><span class="inline-flex items-center gap-1"><i class="h-2 w-2 rounded-full bg-emerald-500"></i>borrower</span><span class="inline-flex items-center gap-1"><i class="h-2 w-2 rounded-full bg-rose-500"></i>guarantors</span></span>
       </div>
-    </div>
+    </div>`}
   </article>`;
 }
 
@@ -264,13 +265,13 @@ async function loadTxs() {
     try {
       const r = await fetch(url); if (!r.ok) continue;
       const txs = await r.json();
-      const groups = [["Setup", "settings-2", txs.filter((t) => !/^Loan [AB]/.test(t.step))], ["Loan A · repaid", "circle-check", txs.filter((t) => t.step.startsWith("Loan A"))], ["Loan B · defaulted + claimed", "gavel", txs.filter((t) => t.step.startsWith("Loan B"))]];
+      const groups = [["Setup", "settings-2", txs.filter((t) => !/^Loan [ABC]/.test(t.step))], ["Loan A · repaid", "circle-check", txs.filter((t) => t.step.startsWith("Loan A"))], ["Loan B · defaulted + claimed", "gavel", txs.filter((t) => t.step.startsWith("Loan B"))], ["Loan C · proposal removed", "circle-x", txs.filter((t) => t.step.startsWith("Loan C"))]].filter((g) => g[2].length);
       $("txs").innerHTML = groups.map(([title, icon, list]) => `
         <div class="fade-in rounded-xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 p-5 shadow-card">
           <div class="flex items-center gap-2 font-medium"><i data-lucide="${icon}" class="h-4 w-4 text-zinc-500"></i>${title}<span class="ml-auto text-xs text-zinc-400">${list.length} tx</span></div>
           <ol class="mt-4 relative border-l border-zinc-200 dark:border-zinc-800 ml-1.5 space-y-4">
             ${list.map((t) => {
-              const step = t.step.replace(/^Loan [AB]: /, "").replace(/-[a-z0-9]{8}\.testnet/g, "");
+              const step = t.step.replace(/^Loan [ABC]: /, "").replace(/-[a-z0-9]{8}\.testnet/g, "");
               const extra = Object.entries(t).filter(([k]) => !["step", "tx", "url", "contract", "dao", "council"].includes(k))
                 .map(([k, v]) => `<span class="rounded bg-zinc-100 dark:bg-zinc-900 px-1.5 py-0.5">${esc(k.replace(/_/g, " "))}: ${esc(typeof v === "object" ? Object.entries(v).map(([a, b]) => short(a) + " " + b).join(", ") : v)}</span>`).join(" ");
               return `<li class="pl-4"><span class="absolute -left-[5px] mt-1.5 h-2.5 w-2.5 rounded-full border-2 border-white dark:border-zinc-950 bg-brand-500"></span>

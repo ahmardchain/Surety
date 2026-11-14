@@ -147,5 +147,54 @@
       "guarantor-2-mwfpr6a5.testnet": "0.5"
     },
     "borrower_b_limit_after": "0"
+  },
+  {
+    "step": "Upgrade surety code in place: a removed (deleted) Sputnik proposal now cancels the loan and releases pledges",
+    "tx": "dBH2JtdVSSgdLfSa14MY3mD4iyQifP3Z2PPeRm3wNYz",
+    "url": "https://testnet.nearblocks.io/txns/dBH2JtdVSSgdLfSa14MY3mD4iyQifP3Z2PPeRm3wNYz",
+    "contract": "surety-mwfpr6a5.testnet"
+  },
+  {
+    "step": "Loan C: borrower-a-mwfpr6a5.testnet requests loan #2 of 1 NEAR (uses the 1.5 NEAR limit earned in Loan A)",
+    "tx": "CEwzkVDKGWkxSBcakRwYAtQByzp1xstY8JDmcD48Ervv",
+    "url": "https://testnet.nearblocks.io/txns/CEwzkVDKGWkxSBcakRwYAtQByzp1xstY8JDmcD48Ervv",
+    "loan_id": 2
+  },
+  {
+    "step": "Loan C: guarantor-1-mwfpr6a5.testnet pledges 0.5 NEAR behind loan #2",
+    "tx": "DKRc8f6r4nCV2Kip6UgsWLpcYqBrhfzgTxvZEynhJog2",
+    "url": "https://testnet.nearblocks.io/txns/DKRc8f6r4nCV2Kip6UgsWLpcYqBrhfzgTxvZEynhJog2"
+  },
+  {
+    "step": "Loan C: guarantor-2-mwfpr6a5.testnet pledges 0.5 NEAR behind loan #2",
+    "tx": "BycF8t2zQ51GTmy7xrAhfwxgXE464Yuj8uN594yvo2bE",
+    "url": "https://testnet.nearblocks.io/txns/BycF8t2zQ51GTmy7xrAhfwxgXE464Yuj8uN594yvo2bE"
+  },
+  {
+    "step": "Loan C: surety files Sputnik Transfer proposal #2",
+    "tx": "CnShsZUG6dvgMXNeo93VeHMbWgqyWnGASiqsUyyzi9fJ",
+    "url": "https://testnet.nearblocks.io/txns/CnShsZUG6dvgMXNeo93VeHMbWgqyWnGASiqsUyyzi9fJ",
+    "proposal_id": 2,
+    "guarantor_locked": {
+      "guarantor-1-mwfpr6a5.testnet": "0.5",
+      "guarantor-2-mwfpr6a5.testnet": "0.5"
+    }
+  },
+  {
+    "step": "Loan C: council votes Remove on proposal #2; Sputnik deletes it, no payout",
+    "tx": "3NEviLGMnxEDC8SCqhfdC7SkcTxdcFDaE8aVv63q2ESN",
+    "url": "https://testnet.nearblocks.io/txns/3NEviLGMnxEDC8SCqhfdC7SkcTxdcFDaE8aVv63q2ESN",
+    "proposal_id": 2
+  },
+  {
+    "step": "Loan C: sync finds the proposal gone -> loan #2 Cancelled, guarantors' pledges released",
+    "tx": "DroToC372EiT8NrJS5DFgrwaBpHcLHaiNPsBQ1ni26Td",
+    "url": "https://testnet.nearblocks.io/txns/DroToC372EiT8NrJS5DFgrwaBpHcLHaiNPsBQ1ni26Td",
+    "status": "Cancelled",
+    "sync_returned": "Removed",
+    "guarantor_locked_after": {
+      "guarantor-1-mwfpr6a5.testnet": "0",
+      "guarantor-2-mwfpr6a5.testnet": "0"
+    }
   }
 ]

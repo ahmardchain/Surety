@@ -362,8 +362,14 @@ impl Surety {
 
     #[private]
     pub fn on_proposal_status(&mut self, #[callback_result] r: Result<Value, PromiseError>, loan_id: u64) -> String {
-        let v = r.expect("could not read proposal");
-        let status = v.get("status").and_then(|s| s.as_str()).unwrap_or("Unknown").to_string();
+        // Sputnik deletes a proposal when the council votes to Remove it, after which
+        // get_proposal panics with ERR_NO_PROPOSAL. Treat that as Removed so the
+        // guarantors' pledges are released instead of staying locked forever.
+        // (An approved proposal is never deleted, so this cannot cancel a paid-out loan.)
+        let status = match r {
+            Ok(v) => v.get("status").and_then(|s| s.as_str()).unwrap_or("Unknown").to_string(),
+            Err(_) => "Removed".to_string(),
+        };
         self.internal_on_status(loan_id, &status);
         status
     }

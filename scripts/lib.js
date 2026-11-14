@@ -77,10 +77,11 @@ function logTx(step, outcome, extra = {}) {
 }
 
 /** Function call; throws with the contract's panic message if it failed. */
-async function call(signerId, contractId, methodName, args = {}, deposit = "0", gas = "300000000000000") {
+async function call(signerId, contractId, methodName, args = {}, deposit = "0", gas = "300000000000000", { allowInnerFailure = false } = {}) {
   const a = await account(signerId);
   const out = await a.functionCall({ contractId, methodName, args, attachedDeposit: BigInt(deposit), gas: BigInt(gas) });
-  const fail = [out.status, ...out.receipts_outcome.map((r) => r.outcome.status)].find((s) => s && s.Failure);
+  const statuses = allowInnerFailure ? [out.status] : [out.status, ...out.receipts_outcome.map((r) => r.outcome.status)];
+  const fail = statuses.find((s) => s && s.Failure);
   if (fail) throw new Error(`${methodName} failed: ${JSON.stringify(fail.Failure)}`);
   return out;
 }

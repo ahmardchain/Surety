@@ -5,3 +5,4 @@ node_modules/
 scripts/.keys/
 /neardev
 web/dist/
+scripts/video/.work/

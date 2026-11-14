@@ -6,9 +6,34 @@ Surety is a small NEAR contract that sits next to an existing **Sputnik DAO v2**
 
 **Live board:** <https://surety.ahmardchain.workers.dev/> (reads the testnet contract and DAO live).
 
-**Demo video (73 s, captions + voiceover):** [`demo/surety-demo.mp4`](demo/surety-demo.mp4). Voice: Microsoft Edge neural TTS (en-US-AndrewNeural); screen: Playwright recording of the live board and of the two key transactions read from NEAR RPC; built by `scripts/video/`.
+**Demo video (73 s, captions + voiceover):** [`demo/surety-demo.mp4`](demo/surety-demo.mp4). Voice: Microsoft Edge neural TTS (en-US-AndrewNeural); screen: Playwright recording of the live board and of the two key transactions read from NEAR RPC; rebuilt with `scripts/video/make.sh`.
 
 Track: **Social Money** (shared budgets, reputation-based access on top of Sputnik DAO and Trezu, named accounts). Network: **NEAR testnet**.
+
+## Judge quickstart (no install, ~10 seconds)
+
+Two read-only calls to NEAR testnet RPC; needs only `curl` and `python3`.
+
+```bash
+curl -s https://rpc.testnet.near.org -H 'content-type: application/json' -d '{"jsonrpc":"2.0","id":1,"method":"query","params":{"request_type":"call_function","finality":"final","account_id":"surety-mwfpr6a5.testnet","method_name":"get_loans","args_base64":"e30="}}' | python3 -c 'import sys,json; from decimal import Decimal as D; [print(l["id"], l["status"], l["borrower"], "amount", D(l["amount"])/10**24, "repaid", D(l["repaid"])/10**24, "claimed", D(l["claimed"])/10**24) for l in json.loads(bytes(json.load(sys.stdin)["result"]["result"]))]'
+```
+**See:**
+```
+0 Repaid borrower-a-mwfpr6a5.testnet amount 1 repaid 1 claimed 0
+1 Defaulted borrower-b-mwfpr6a5.testnet amount 1 repaid 0.2 claimed 0.8
+2 Cancelled borrower-a-mwfpr6a5.testnet amount 1 repaid 0 claimed 0
+```
+```bash
+curl -s https://rpc.testnet.near.org -H 'content-type: application/json' -d '{"jsonrpc":"2.0","id":1,"method":"query","params":{"request_type":"call_function","finality":"final","account_id":"surety-mwfpr6a5.testnet","method_name":"get_members","args_base64":"e30="}}' | python3 -c 'import sys,json; from decimal import Decimal as D; [print(m["account_id"], "limit", D(m["limit"])/10**24, "repaid", m["loans_repaid"], "defaults", m["loans_defaulted"], "locked", D(m["locked"])/10**24) for m in json.loads(bytes(json.load(sys.stdin)["result"]["result"]))]'
+```
+**See:**
+```
+borrower-a-mwfpr6a5.testnet limit 1.5 repaid 1 defaults 0 locked 0
+borrower-b-mwfpr6a5.testnet limit 0 repaid 0 defaults 1 locked 0
+guarantor-1-mwfpr6a5.testnet limit 1.5 repaid 0 defaults 0 locked 0
+guarantor-2-mwfpr6a5.testnet limit 1.5 repaid 0 defaults 0 locked 0
+```
+That is the whole story in state: loan 0 repaid (borrower limit 1 → 1.5 NEAR, guarantors +0.5), loan 1 defaulted and made whole from guarantors (0.2 repaid + 0.8 claimed = 1 NEAR back), loan 2's proposal removed by the council (pledges released, nothing locked), defaulter's limit 0. Every step has a transaction link in [section 2](#2-check-the-recorded-run-on-chain-same-dao-three-loans).
 
 ## Problem
 
@@ -58,7 +83,7 @@ Open <http://127.0.0.1:8765/web/> (dev version, loads Tailwind/Lucide from CDN; 
 
 The page reads the chain directly (`?contract=<id>` points it at another deployment).
 
-### 2. Check the recorded run on-chain (same DAO, two loans)
+### 2. Check the recorded run on-chain (same DAO, three loans)
 Every step below was sent by `scripts/setup.js` and `scripts/demo.js`. The raw log, with balances before and after, is in [`demo/txs.json`](demo/txs.json).
 
 | # | Step | Tx |
@@ -86,10 +111,18 @@ Every step below was sent by `scripts/setup.js` and `scripts/demo.js`. The raw l
 | 21 | Loan B: sync reads proposal status -> loan #1 Active | [2Kmn47hoUx…](https://testnet.nearblocks.io/txns/2Kmn47hoUxCc8JZV12x2zD2GMpDC3GFKotWLsA6V2e2p) |
 | 22 | Loan B: borrower-b-mwfpr6a5.testnet repays only 0.2 NEAR, then stops | [A2V2byrGYy…](https://testnet.nearblocks.io/txns/A2V2byrGYyvuwH7EW1SrDV6mBGhPtVujWhGFeBijPaVz) |
 | 23 | Loan B: past due -> claim moves guarantors' locked savings (0.8 NEAR) to DAO treasury in one call | [4rJyNuqXD8…](https://testnet.nearblocks.io/txns/4rJyNuqXD8JHr2jyWQnRWPadMAaH1p5btsLNJamgCZtq) |
+| 24 | Upgrade surety code in place: a removed (deleted) Sputnik proposal now cancels the loan and releases pledges | [dBH2JtdVSS…](https://testnet.nearblocks.io/txns/dBH2JtdVSSgdLfSa14MY3mD4iyQifP3Z2PPeRm3wNYz) |
+| 25 | Loan C: borrower-a-mwfpr6a5.testnet requests loan #2 of 1 NEAR (uses the 1.5 NEAR limit earned in Loan A) | [CEwzkVDKGW…](https://testnet.nearblocks.io/txns/CEwzkVDKGWkxSBcakRwYAtQByzp1xstY8JDmcD48Ervv) |
+| 26 | Loan C: guarantor-1-mwfpr6a5.testnet pledges 0.5 NEAR behind loan #2 | [DKRc8f6r4n…](https://testnet.nearblocks.io/txns/DKRc8f6r4nCV2Kip6UgsWLpcYqBrhfzgTxvZEynhJog2) |
+| 27 | Loan C: guarantor-2-mwfpr6a5.testnet pledges 0.5 NEAR behind loan #2 | [BycF8t2zQ5…](https://testnet.nearblocks.io/txns/BycF8t2zQ51GTmy7xrAhfwxgXE464Yuj8uN594yvo2bE) |
+| 28 | Loan C: surety files Sputnik Transfer proposal #2 | [CnShsZUG6d…](https://testnet.nearblocks.io/txns/CnShsZUG6dvgMXNeo93VeHMbWgqyWnGASiqsUyyzi9fJ) |
+| 29 | Loan C: council votes Remove on proposal #2; Sputnik deletes it, no payout | [3NEviLGMnx…](https://testnet.nearblocks.io/txns/3NEviLGMnxEDC8SCqhfdC7SkcTxdcFDaE8aVv63q2ESN) |
+| 30 | Loan C: sync finds the proposal gone -> loan #2 Cancelled, guarantors' pledges released | [DroToC372E…](https://testnet.nearblocks.io/txns/DroToC372EiT8NrJS5DFgrwaBpHcLHaiNPsBQ1ni26Td) |
 
 Key facts to check:
 - **Step 15 (Loan A repaid):** the `loan_repaid` event shows borrower-a's `new_limit` = 1.5 NEAR, up from 1 NEAR.
 - **Step 23 (Loan B claim):** one transaction, two receipts. The `claimed` event shows 0.4 NEAR taken from guarantor-1 and 0.4 NEAR from guarantor-2, and a 0.8 NEAR transfer to `coop-mwfpr6a5.sputnik-v2.testnet`. The DAO balance goes from 7.2 to 8 NEAR.
+- **Steps 25–30 (Loan C, proposal removed):** the council votes *Remove*, so Sputnik deletes the proposal and pays nothing. `sync` (step 30) cannot read it any more, treats it as Removed, cancels the loan and releases both guarantors' 0.5 NEAR. The deployed code was upgraded for this in step 24 (see *Scope and known limits*).
 - **Steps 12/19:** the proposals filed on the DAO are ordinary Sputnik `Transfer` proposals:
   ```bash
   near view coop-mwfpr6a5.sputnik-v2.testnet get_proposal '{"id":1}'
@@ -116,7 +149,7 @@ Requires Rust (the toolchain is pinned to 1.86 in `contract/rust-toolchain.toml`
 ```bash
 cd contract && cargo test
 ```
-**See:** `17 passed`. The tests cover limits, pledging rules, full cover and 2-guarantor checks, repay → limit rise, pro-rata claim with exact rounding, rejected proposals, failed filing, and locked savings that cannot be withdrawn.
+**See:** `19 passed`. The tests cover limits, pledging rules, full cover and 2-guarantor checks, repay → limit rise, pro-rata claim with exact rounding, rejected and removed proposals, failed filing, stale callbacks, and locked savings that cannot be withdrawn.
 ```bash
 cargo build --target wasm32-unknown-unknown --release
 ```
@@ -133,15 +166,9 @@ KEYS_DIR=$HOME/.surety-keys node demo.js
 **See:** `setup.js` creates six named accounts from the testnet faucet, a new Sputnik DAO, deploys and initializes Surety, and funds the treasury. `demo.js` runs Loan A (repaid) and Loan B (defaulted and claimed after 90 s) and writes a fresh `demo/txs.json`. Keys are written only to `KEYS_DIR`. If your network needs a proxy, run Node with `NODE_USE_ENV_PROXY=1`.
 
 ### 6. See the DAO in Trezu
-Hosted Trezu (trezu.app) reads mainnet DAOs only. The Trezu repo includes a dev mock backend for testnet DAOs (see [Trezu nt-fe README](https://github.com/NEAR-DevHub/trezu/blob/main/nt-fe/README.md)):
-```bash
-git clone https://github.com/NEAR-DevHub/trezu && cd trezu/nt-fe && bun install && bun run testnet:mock
-```
-In a second terminal:
-```bash
-NEXT_PUBLIC_NEAR_NETWORK=testnet NEXT_PUBLIC_NEAR_RPC_URL=https://rpc.testnet.fastnear.com NEXT_PUBLIC_BACKEND_API_BASE=http://127.0.0.1:8889 bun run dev
-```
-Open <http://localhost:3000/coop-mwfpr6a5.sputnik-v2.testnet/requests>. **Expected:** the two Surety Transfer proposals as normal payment requests, approved by the council. *(Not yet verified in the recorded run; this README will be updated with a screenshot.)*
+Hosted Trezu (trezu.app) reads mainnet DAOs only, so the testnet DAO cannot be opened there. The Trezu repo ships a dev-only mock backend for testnet DAOs (see the [Trezu nt-fe README](https://github.com/NEAR-DevHub/trezu/blob/main/nt-fe/README.md)): run `bun run testnet:mock`, then start the app with `NEXT_PUBLIC_NEAR_NETWORK=testnet`, `NEXT_PUBLIC_NEAR_RPC_URL=https://rpc.testnet.fastnear.com` and `NEXT_PUBLIC_BACKEND_API_BASE=http://127.0.0.1:8889`, and open `http://localhost:3000/coop-mwfpr6a5.sputnik-v2.testnet/requests`.
+
+**Status: not verified by the author.** These steps come from Trezu's own README; Surety's proposals are plain Sputnik `Transfer` proposals, which is the kind Trezu lists as payment requests. On a mainnet DAO no extra step is needed.
 
 ## Contract API (`contract/src/lib.rs`)
 
@@ -163,6 +190,8 @@ The contract emits NEP-297-style `EVENT_JSON` logs (`deposit`, `loan_requested`,
 
 ## Scope and known limits
 
+- `request_loan` scans all loans to enforce one in-progress loan per borrower, so its gas grows with the loan count. Fine for a savings group; a per-borrower index is the fix at scale.
+- **Fixed during the hackathon:** the first deployment left a loan stuck in `Filed` (pledges locked) if the council *removed* its proposal, because Sputnik deletes removed proposals and `get_proposal` then fails. `sync` now treats a missing proposal as Removed. The fix was deployed in place (tx step 24) and demonstrated with Loan C.
 - Native NEAR only. FT/stablecoin loans would use the same `Transfer` with `token_id`; not built yet.
 - No interest or fees.
 - The due date starts when `sync` sees `Approved`, not at the DAO's payout block. Anyone can call `sync` right after the vote.

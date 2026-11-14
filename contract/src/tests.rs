@@ -277,3 +277,39 @@ fn locked_savings_not_withdrawable() {
     ctx("guarantor-1.testnet", 0, 20);
     let _ = c.withdraw(U128(3 * NEAR));
 }
+
+#[test]
+fn removed_proposal_releases_pledges_without_bond_refund() {
+    let mut c = setup();
+    ctx("borrower-a.testnet", 0, 0);
+    let id = c.request_loan(U128(NEAR), U64(60), None);
+    ctx("guarantor-1.testnet", 0, 0);
+    c.pledge(id, U128(NEAR / 2));
+    ctx("guarantor-2.testnet", 0, 0);
+    c.pledge(id, U128(NEAR / 2));
+    ctx("borrower-a.testnet", NEAR / 10, 0);
+    let _ = c.file_proposal(id);
+    c.internal_on_filed(id, Some(4));
+    // proposal deleted by a Remove vote: get_proposal fails -> callback sees Err
+    ctx("surety.testnet", 0, 5);
+    let status = c.on_proposal_status(Err(near_sdk::PromiseError::Failed), id);
+    assert_eq!(status, "Removed");
+    assert_eq!(c.get_loan(id).unwrap().status, LoanStatus::Cancelled);
+    for g in ["guarantor-1.testnet", "guarantor-2.testnet"] {
+        let m = c.get_member(acc(g)).unwrap().member;
+        assert_eq!(m.locked.0, 0);
+        assert_eq!(m.savings.0, 3 * NEAR);
+    }
+    // borrower can request again
+    ctx("borrower-a.testnet", 0, 10);
+    c.request_loan(U128(NEAR), U64(60), None);
+}
+
+#[test]
+fn approved_status_after_cancel_is_ignored() {
+    let mut c = setup();
+    let id = activate(&mut c, "borrower-a.testnet", NEAR, 60, 0);
+    // a stale callback must not re-activate or cancel an active loan
+    c.internal_on_status(id, "Removed");
+    assert_eq!(c.get_loan(id).unwrap().status, LoanStatus::Active);
+}
